@@ -72,6 +72,9 @@ files=glob.glob(source)
 fig=plt.figure(figsize=(18,10))
 gs = gridspec.GridSpec(2, int(np.ceil(len(files)/2))+1, width_ratios=[1]*int(np.ceil(len(files)/2))+[0.1])
 
+wd_all=[]
+DS_selected_all=[]
+
 #%% Main
 ctr=0
 for f in files:
@@ -87,7 +90,6 @@ for f in files:
     values=Data.DS.values[sel_y,:][:,sel_x].ravel()
     DS_selected=griddata(points,values,([FC['x']['M2'],FC['x']['M5'],x_solar],[FC['y']['M2'],FC['y']['M5'],y_solar]))
     
-
     ax = plt.subplot(gs[int(ctr/int(np.ceil(len(files)/2))), ctr-int(ctr/int(np.ceil(len(files)/2)))*int(np.ceil(len(files)/2))])
    
     cf=plt.contourf(Data.x,Data.y,Data.DS,np.arange(-30,31,2.5),vmin=-30,vmax=30,cmap='seismic',extend='both')
@@ -117,9 +119,22 @@ for f in files:
     ax.arrow(1250,625,utl.cosd(270-wd)*150,utl.sind(270-wd)*150,head_width=300, head_length=100, fc='g', ec='k',width=200)
     utl.axis_equal()
     ctr+=1
+    
+    DS_selected_all=utl.vstack(DS_selected_all,DS_selected)
+    wd_all=np.append(wd_all,wd)
 
 utl.remove_labels(fig)
 
 cbar_ax = plt.subplot(gs[:, -1])
 cbar = fig.colorbar(cf, cax=cbar_ax,label=r'$\Delta S$ [%]')
+
+#%% Plots
+matplotlib.rcParams['font.size'] = 22
+plt.figure(figsize=(18,6))
+plt.plot(wd_all,(DS_selected_all[:,0]/100-DS_selected_all[:,1]/100)/(DS_selected_all[:,1]/100+1)*100,'.-k',markersize=10)
+plt.xlabel(r'$\theta_w$ [$^\circ$]')
+plt.ylabel(r'$\frac{\overline{u}_{M2}(z=h+l)-\overline{u}_{M5}(z=h+l)}{\overline{u}_{M5}(z=h+l)}$ [%]')
+plt.xticks(wd_all)
+plt.grid()
+plt.tight_layout()
 
