@@ -30,6 +30,7 @@ matplotlib.rcParams['font.size'] = 14
 #%% Inputs
 source=os.path.join(cd,'data/DS*nc')
 source_nwtc='data/NWTC.xlsx'
+source_ws='data/wspdDifference_wdirBins_M5 61m_M2 50m_20230401_20240508.csv'
 
 #graphics 
 xlim=[-250,1500]#[m]
@@ -37,6 +38,8 @@ ylim=[-875,875]#[m]
 
 #%% Initalization
 FC=pd.read_excel(source_nwtc).set_index('Site')
+
+WS=pd.read_csv(source_ws)
 
 #locations
 xy=utm.from_latlon(FC['Lat'].values,FC['Lon'].values)
@@ -131,7 +134,9 @@ cbar = fig.colorbar(cf, cax=cbar_ax,label=r'$\Delta S$ [%]')
 #%% Plots
 matplotlib.rcParams['font.size'] = 22
 plt.figure(figsize=(18,6))
-plt.plot(wd_all,(DS_selected_all[:,0]/100-DS_selected_all[:,1]/100)/(DS_selected_all[:,1]/100+1)*100,'.-k',markersize=10)
+plt.plot(WS['Wind direction (deg)'],WS['Wind speed difference (m/s)'],'.-b',markersize=10,label='Data')
+plt.plot(wd_all,(DS_selected_all[:,0]/100-DS_selected_all[:,1]/100)/(DS_selected_all[:,1]/100+1)*100,'.-k',markersize=10,label='JH75 model')
+plt.legend()
 plt.xlabel(r'$\theta_w$ [$^\circ$]')
 plt.ylabel(r'$\frac{\overline{u}_{M2}(z=h+l)-\overline{u}_{M5}(z=h+l)}{\overline{u}_{M5}(z=h+l)}$ [%]')
 plt.xticks(wd_all)
