@@ -30,7 +30,7 @@ source=os.path.join(cd,'data/FC_topo_v2.nc')
 source_nwtc='data/NWTC.xlsx'
 
 z0=0.03#[m] surface roughness (farmland with very few buildings/trees in WAsP)
-wds=np.arange(0,360,45)#[deg] set of wind directions
+wds=np.arange(10,360,20)#[deg] set of wind directions
 
 xlim=[-250,1500]#[m]
 ylim=[-875,875]#[m]
