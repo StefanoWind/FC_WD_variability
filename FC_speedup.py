@@ -124,10 +124,10 @@ for wd in wds:
     
     #Output
     Output=xr.Dataset()
-    Output['DS']=xr.DataArray(data=DS,coords={'x':x,'y':y})
-    Output['L']=xr.DataArray(data=L_all,coords={'x':x,'y':y})
-    Output['H']=xr.DataArray(data=H_all,coords={'x':x,'y':y})
-    Output['l']=xr.DataArray(data=l_all,coords={'x':x,'y':y})
+    Output['DS']=xr.DataArray(data=DS.T,  coords={'x':x,'y':y})
+    Output['L']=xr.DataArray(data=L_all.T,coords={'x':x,'y':y})
+    Output['H']=xr.DataArray(data=H_all.T,coords={'x':x,'y':y})
+    Output['l']=xr.DataArray(data=l_all.T,coords={'x':x,'y':y})
     Output.to_netcdf(os.path.join(cd,f'data/DS_{wd:03d}.nc'))
 
     #Plots     
