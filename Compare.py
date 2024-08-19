@@ -24,7 +24,7 @@ plt.close('all')
 
 matplotlib.rcParams['font.family'] = 'serif'
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
-matplotlib.rcParams['font.size'] = 12
+matplotlib.rcParams['font.size'] = 10
 
 #%% Inputs
 source=os.path.join(cd,'data/20deg/DS*nc')
@@ -38,6 +38,8 @@ z_ref={'low':5.0,
        'high': 50.0}
 z_sel={'low':3.0,
        'high': 61.0}
+
+z0=0.03#[m] roughness length
 
 #graphics 
 xlim=[-250,1500]#[m]
@@ -75,8 +77,8 @@ for f in files:
     wd=np.float64(f[-6:-3])
 
     DS_ref=Data.DS.interp({'x':FC['x'][site_ref],'y':FC['y'][site_ref]})/100
-    DS_sel=Data.DS.interp({'x':FC['y'][site_sel],'y':FC['x'][site_sel]})/100
-    print('Coordinate swapped')
+    DS_sel=Data.DS.interp({'x':FC['x'][site_sel],'y':FC['y'][site_sel]})/100
+    # print('Coordinate swapped')
     DS_ref_all=np.append(DS_ref_all,DS_ref)
     DS_sel_all=np.append(DS_sel_all,DS_sel)
     wd_all=np.append(wd_all,wd)
@@ -88,14 +90,15 @@ matplotlib.rcParams['font.size'] = 22
 plt.figure(figsize=(18,8))
 ctr=0
 for s in sources_ws.keys():
-    DWS=((1+DS_sel_all)/(1+DS_ref_all)*np.log(z_sel[s])/np.log(z_ref[s])-1)*100
-    DWS=((1+DS_sel_all)/(1+DS_ref_all)-1)*100
+    DWS=((1+DS_sel_all)/(1+DS_ref_all)*np.log(z_sel[s]/z0)/np.log(z_ref[s]/z0)-1)*100
+   
     WS=pd.read_csv(sources_ws[s])
-    rho=print(s+':' +str(utl.nancorrcoef(WS['Wind speed difference (m/s)'],DWS)[0,1]))
+    print(s+': corr = ' +str(utl.nancorrcoef(WS['Wind speed difference (m/s)'],DWS)[0,1]))
     plt.plot(WS['Wind direction (deg)'],WS['Wind speed difference (m/s)'],'.-',color=colors[ctr],markersize=10,label='Exp. ('+labels[s]+')')
     plt.plot(wd_all,DWS,'--',color=colors[ctr],markersize=10,label='JH75 ('+labels[s]+')')
     ctr+=1
-
+DWS_noshear=((1+DS_sel_all)/(1+DS_ref_all)-1)*100
+plt.plot(wd_all,DWS_noshear,'--k',markersize=10,label='JH75 (no shear)')
 plt.legend(draggable=True)
 plt.xlabel('Wind direction (deg)')
 plt.ylabel('Relative wind speed difference (percent)')
