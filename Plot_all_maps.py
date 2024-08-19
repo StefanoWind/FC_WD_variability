@@ -35,6 +35,8 @@ source_ws='data/wspdDifference_wdirBins_M5 61m_M2 50m_20230401_20240508.csv'
 #graphics 
 xlim=[-250,1500]#[m]
 ylim=[-875,875]#[m]
+plot_rows=3
+plot_cols=6
 
 #%% Initalization
 FC=pd.read_excel(source_nwtc).set_index('Site')
@@ -73,7 +75,7 @@ y_solar=y_solar/N
 
 files=glob.glob(source)
 fig=plt.figure(figsize=(18,10))
-gs = gridspec.GridSpec(2, int(np.ceil(len(files)/2))+1, width_ratios=[1]*int(np.ceil(len(files)/2))+[0.1])
+gs = gridspec.GridSpec(plot_rows, plot_cols, width_ratios=[1]*(plot_cols-1)+[0.1])
 
 wd_all=[]
 DS_selected_all=[]
@@ -93,7 +95,7 @@ for f in files:
     values=Data.DS.values[sel_y,:][:,sel_x].ravel()
     DS_selected=griddata(points,values,([FC['x']['M2'],FC['x']['M5'],x_solar],[FC['y']['M2'],FC['y']['M5'],y_solar]))
     
-    ax = plt.subplot(gs[int(ctr/int(np.ceil(len(files)/2))), ctr-int(ctr/int(np.ceil(len(files)/2)))*int(np.ceil(len(files)/2))])
+    ax = plt.subplot(gs[int(ctr/plot_cols), ctr-int(ctr/plot_cols)*plot_cols])
    
     cf=plt.contourf(Data.x,Data.y,Data.DS,np.arange(-30,31,2.5),vmin=-30,vmax=30,cmap='seismic',extend='both')
     
